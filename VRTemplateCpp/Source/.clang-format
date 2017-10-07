@@ -1,0 +1,37 @@
+---
+Language: Cpp
+Standard: Cpp11
+BasedOnStyle: Google
+
+ColumnLimit: 120
+
+BreakBeforeBraces: Allman
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: true
+
+TabWidth: 4
+IndentWidth: 4
+UseTab: ForIndentation
+
+PointerAlignment: Left
+DerivePointerAlignment: false
+
+BinPackParameters: false
+BinPackArguments: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+Cpp11BracedListStyle: true
+SpacesBeforeTrailingComments: 1
+ReflowComments: true
+SortIncludes: false
+
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignOperands: true
+AlignTrailingComments: true
+AllowShortCaseLabelsOnASingleLine: true
+
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+MaxEmptyLinesToKeep: 1
+
