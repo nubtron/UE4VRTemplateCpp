@@ -54,9 +54,10 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	void HandleTeleportation();
 	void UpdateTeleportDirection();
 
-	void HandleHMTeleportPressed();
-	void HandleHMTeleportReleased();
-	void Teleport();
+	void HandleHMDTeleportPressed();
+	void HandleHMDTeleportReleased();
+	void FinishTeleport();
+
 
 	// Create MID to give activation feedback during teleportation.
 	void CreateTeleportationMID();

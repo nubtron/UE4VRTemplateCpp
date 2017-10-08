@@ -16,6 +16,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "AI/Navigation/NavigationSystem.h"
 #include "Engine/StaticMesh.h"
+#include "MotionControllerComponent.h"
 
 AMotionControllerCpp::AMotionControllerCpp()
 {
@@ -30,6 +31,90 @@ AMotionControllerCpp::AMotionControllerCpp()
 	BeamMesh         = CreateDefaultSubobject<UStaticMesh>(TEXT("Beam Mesh"));
 	ArcEndPoint      = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arc End Point"));
 	Arrow            = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
+	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Motion Controller"));
+}
+
+void AMotionControllerCpp::DisableTeleporter()
+{
+	if (!bIsTeleporterActive) return;
+	bIsTeleporterActive = false;
+
+	check(IsValid(TeleportCylinder));
+	TeleportCylinder->SetVisibility(/*bNewVisiblility*/ false, /*bPropagateToChildren*/ true);
+
+	check(IsValid(ArcEndPoint));
+	ArcEndPoint->SetVisibility(/*bNewVisiblility*/ false, /*bPropagateToChildren*/ false);
+
+	check(IsValid(RoomScaleMesh));
+	RoomScaleMesh->SetVisibility(/*bNewVisiblility*/ false, /*bPropagateToChildren*/ false);
+}
+
+void AMotionControllerCpp::GetTeleportDestination(FVector& OutPosition, FRotator& OutRotation) const
+{
+	OutRotation = TeleportRotation;
+
+	FRotator DeviceRotation;
+	FVector  DeviceLocation; // Relative HMD location from Origin
+	UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(DeviceRotation, DeviceLocation);
+	const FVector DeviceLocation2D{DeviceLocation.X, DeviceLocation.Y, 0.f};
+
+	check(IsValid(TeleportCylinder));
+
+	// Substract HMD origin(Camera) to get correct Pawn destination for teleportation.
+	OutPosition = TeleportCylinder->GetComponentLocation() - TeleportRotation.RotateVector(DeviceLocation2D);
+}
+
+void AMotionControllerCpp::GrabActor()
+{
+	bWantsToGrip            = true;
+	auto* const NearestMesh = GetActorNearHand();
+	if (!IsValid(NearestMesh)) return;
+	AttachedActor = NearestMesh;
+
+	if (auto* const PickupActor = Cast<IPickupActor>(AttachedActor))
+	{
+		check(IsValid(MotionController));
+		PickupActor->AttachTo(MotionController);
+		RumbleController(/*Intensity*/ 0.7f);
+	}
+}
+
+void AMotionControllerCpp::ReleaseActor()
+{
+	bWantsToGrip = false;
+	if (!IsValid(AttachedActor)) return;
+
+	const auto* AttachedActorRoot = AttachedActor->GetRootComponent();
+	check(IsValid(AttachedActorRoot));
+	check(IsValid(MotionController));
+	// Make sure this hand is still holding the Actor (May have been taken by another hand / event)
+	if (AttachedActorRoot->GetAttachParent() == MotionController)
+	{
+		if (auto* const PickupActor = Cast<IPickupActor>(AttachedActor))
+		{
+			PickupActor->Drop();
+			RumbleController(/*Intensity*/ 0.2f);
+		}
+	}
+
+	AttachedActor = nullptr;
+}
+
+void AMotionControllerCpp::ActivateTeleporter()
+{
+	// Set the flag, rest of teleportation is handled on EventGraph during Tick
+	bIsTeleporterActive = true;
+
+	check(IsValid(TeleportCylinder));
+	TeleportCylinder->SetVisibility(/*bNewVisibility*/ true, /*bPropagateToChildren*/ true);
+
+	// Only show during Teleport if room-scale is available.
+	check(IsValid(RoomScaleMesh));
+	RoomScaleMesh->SetVisibility(bIsRoomScale);
+
+	// Store Rotation to later compare roll value to support wrist-based orientation of the teleporter.
+	check(IsValid(MotionController));
+	InitialControllerRotation = MotionController->GetComponentRotation();
 }
 
 void AMotionControllerCpp::BeginPlay()
@@ -60,7 +145,7 @@ void AMotionControllerCpp::BeginPlay()
 	GrapSphere->OnComponentHit.AddDynamic(this, &ThisClass::HandleComponentHit_ControllerMesh);
 }
 
-void AMotionControllerCpp::Tick(float DeltaTime)
+void AMotionControllerCpp::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -164,7 +249,7 @@ void AMotionControllerCpp::HandleTeleportArc()
 	TArray<FVector> TracePoints;
 	FVector         NavMeshLocation;
 	FVector         TraceLocation;
-	const bool      bIsValidTeleportDestination = TraceTeleportDestination(TracePoints, NavMeshLocation, TraceLocation);
+	bIsValidTeleportDestination = TraceTeleportDestination(TracePoints, NavMeshLocation, TraceLocation);
 
 	check(IsValid(TeleportCylinder));
 	TeleportCylinder->SetVisibility(bIsValidTeleportDestination, /*bPropagateToChildren*/ true);
@@ -329,12 +414,12 @@ void AMotionControllerCpp::UpdateArcEndpoint(const FVector& NewLocation, const b
 	RoomScaleMesh->SetWorldRotation(TeleportRotation);
 }
 
-void AMotionControllerCpp::HandleBeginOverlap_GrabSphere(UPrimitiveComponent* OverlappedComponent,
-                                                         AActor*              OtherActor,
-                                                         UPrimitiveComponent* OtherComp,
-                                                         int32                OtherBodyIndex,
-                                                         bool                 bFromSweep,
-                                                         const FHitResult&    SweepResult)
+void AMotionControllerCpp::HandleBeginOverlap_GrabSphere(UPrimitiveComponent* const OverlappedComponent,
+                                                         AActor* const              OtherActor,
+                                                         UPrimitiveComponent* const OtherComp,
+                                                         const int32                OtherBodyIndex,
+                                                         const bool                 bFromSweep,
+                                                         const FHitResult&          SweepResult)
 {
 	// Rumble Controller when overlapping valid StaticMesh
 
@@ -347,11 +432,11 @@ void AMotionControllerCpp::HandleBeginOverlap_GrabSphere(UPrimitiveComponent* Ov
 	}
 }
 
-void AMotionControllerCpp::HandleComponentHit_ControllerMesh(UPrimitiveComponent* HitComponent,
-                                                             AActor*              OtherActor,
-                                                             UPrimitiveComponent* OtherComp,
-                                                             FVector              NormalImpulse,
-                                                             const FHitResult&    Hit)
+void AMotionControllerCpp::HandleComponentHit_ControllerMesh(UPrimitiveComponent* const HitComponent,
+                                                             AActor* const              OtherActor,
+                                                             UPrimitiveComponent* const OtherComp,
+                                                             const FVector              NormalImpulse,
+                                                             const FHitResult&          Hit)
 {
 	const float Intensity = UKismetMathLibrary::MapRangeClamped(
 	    NormalImpulse.Size(), /*In Range A*/ 0.f, /*In Range B*/ 1500.f, /*Out Range A*/ 0.f, /*Out Range B*/ 0.8f);

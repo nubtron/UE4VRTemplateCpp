@@ -45,8 +45,8 @@ void AHMDLocomotionPawnCpp::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	check(IsValid(PlayerInputComponent));
 	PlayerInputComponent->BindAction(
 	    TEXT("ResetOrientationAndPosition"), IE_Pressed, this, &ThisClass::ResetOrientationAndPosition);
-	PlayerInputComponent->BindAction(TEXT("HMDTeleport"), IE_Pressed, this, &ThisClass::HandleHMTeleportPressed);
-	PlayerInputComponent->BindAction(TEXT("HMDTeleport"), IE_Released, this, &ThisClass::HandleHMTeleportReleased);
+	PlayerInputComponent->BindAction(TEXT("HMDTeleport"), IE_Pressed, this, &ThisClass::HandleHMDTeleportPressed);
+	PlayerInputComponent->BindAction(TEXT("HMDTeleport"), IE_Released, this, &ThisClass::HandleHMDTeleportReleased);
 }
 
 void AHMDLocomotionPawnCpp::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -137,7 +137,7 @@ void AHMDLocomotionPawnCpp::UpdateTeleportDirection()
 	}
 }
 
-void AHMDLocomotionPawnCpp::HandleHMTeleportPressed()
+void AHMDLocomotionPawnCpp::HandleHMDTeleportPressed()
 {
 	// Pin the current location we look at
 	if (!bCurrentLocationValid) return;
@@ -147,7 +147,7 @@ void AHMDLocomotionPawnCpp::HandleHMTeleportPressed()
 	PinnedLocation  = CurrentLookAtLocation;
 }
 
-void AHMDLocomotionPawnCpp::HandleHMTeleportReleased()
+void AHMDLocomotionPawnCpp::HandleHMDTeleportReleased()
 {
 	if (!bLocationPinned) return;
 	bLocationPinned = false;
@@ -165,10 +165,10 @@ void AHMDLocomotionPawnCpp::HandleHMTeleportReleased()
 	                                     /*bHoldWhenFinished*/ true);
 
 	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::Teleport, FadeOutDuration, /*bLoop*/ false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &ThisClass::FinishTeleport, FadeOutDuration, /*bLoop*/ false);
 }
 
-void AHMDLocomotionPawnCpp::Teleport()
+void AHMDLocomotionPawnCpp::FinishTeleport()
 {
 
 	FRotator DeviceRotation;
