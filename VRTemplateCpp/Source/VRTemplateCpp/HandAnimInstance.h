@@ -17,9 +17,11 @@ class VRTEMPLATECPP_API UHandAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
 	void SetGripState(const EGrip InGripState) { GripState = InGripState; }
 protected:
-	UFUNCTION(BlueprintPure) EGrip GetGripState() const { return GripState; }
+	UFUNCTION(BlueprintPure) 
+	EGrip GetGripState() const { return GripState; }
 	
 private:
 	EGrip GripState = EGrip::Open;
