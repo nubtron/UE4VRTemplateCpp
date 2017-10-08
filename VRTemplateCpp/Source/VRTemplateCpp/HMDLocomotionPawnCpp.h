@@ -25,12 +25,13 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	UPROPERTY(EditAnywhere) float FadeOutDuration          = 0.1f;
 	UPROPERTY(EditAnywhere) float FadeInDuration           = 0.2f;
 	UPROPERTY(EditAnywhere) FLinearColor TeleportFadeColor = FLinearColor::Black;
+	UPROPERTY(EditAnywhere) TEnumAsByte<EObjectTypeQuery> TeleportTraceObjectType;
 
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* TeleportPin = nullptr;
-	UPROPERTY(EditAnywhere) UArrowComponent* TraceDirection   = nullptr;
-	UPROPERTY(EditAnywhere) UCameraComponent* Camera          = nullptr;
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* Arrow       = nullptr;
-	UPROPERTY(EditAnywhere) TEnumAsByte<EObjectTypeQuery> TeleportTraceObjectType; // WorldStatic
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* TeleportPin = nullptr;
+	UPROPERTY(VisibleAnywhere) UArrowComponent* TraceDirection   = nullptr;
+	UPROPERTY(VisibleAnywhere) UCameraComponent* Camera          = nullptr;
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Arrow       = nullptr;
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Ring       = nullptr;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -57,7 +58,6 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	void HandleHMDTeleportPressed();
 	void HandleHMDTeleportReleased();
 	void FinishTeleport();
-
 
 	// Create MID to give activation feedback during teleportation.
 	void CreateTeleportationMID();

@@ -17,10 +17,32 @@
 AHMDLocomotionPawnCpp::AHMDLocomotionPawnCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	VROrigin                      = CreateDefaultSubobject<USceneComponent>("VR Origin");
-	TeleportPin                   = CreateDefaultSubobject<UStaticMeshComponent>("Teleport Pin");
-	TraceDirection                = CreateDefaultSubobject<UArrowComponent>("Trace Direction");
-	Arrow                         = CreateDefaultSubobject<UStaticMeshComponent>("Arrow");
+
+	auto* SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	{
+		VROrigin = CreateDefaultSubobject<USceneComponent>(TEXT("VR Origin"));
+		VROrigin->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		{
+			Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+			Camera->AttachToComponent(VROrigin, FAttachmentTransformRules::KeepRelativeTransform);
+			{
+				TraceDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("Trace Direction"));
+				TraceDirection->AttachToComponent(Camera, FAttachmentTransformRules::KeepRelativeTransform);
+			}
+		}
+		TeleportPin = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Teleport Pin"));
+		TeleportPin->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		{
+			Arrow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
+			Arrow->AttachToComponent(TeleportPin, FAttachmentTransformRules::KeepRelativeTransform);
+
+			Ring = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring"));
+			Ring->AttachToComponent(TeleportPin, FAttachmentTransformRules::KeepRelativeTransform);
+		}
+	}
+
+
+
 }
 
 void AHMDLocomotionPawnCpp::BeginPlay()

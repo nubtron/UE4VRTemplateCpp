@@ -22,16 +22,43 @@ AMotionControllerCpp::AMotionControllerCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	auto* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	{
+		MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Motion Controller"));
+		MotionController->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		{
+			HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand Mesh"));
+			HandMesh->AttachToComponent(MotionController, FAttachmentTransformRules::KeepRelativeTransform);
+			{
+				ArcDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("Arc Direction"));
+				ArcDirection->AttachToComponent(HandMesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+				ArcSpline = CreateDefaultSubobject<USplineComponent>(TEXT("ArcSpline"));
+				ArcSpline->AttachToComponent(HandMesh, FAttachmentTransformRules::KeepRelativeTransform);
+
+				GrapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Grab Sphere"));
+				GrapSphere->AttachToComponent(HandMesh, FAttachmentTransformRules::KeepRelativeTransform);
+			}
+			ArcEndPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arc End Point"));
+			ArcEndPoint->AttachToComponent(MotionController, FAttachmentTransformRules::KeepRelativeTransform);
+		}
+		TeleportCylinder = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Teleport Cylinder"));
+		TeleportCylinder->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		{
+			Ring = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring"));
+			Ring->AttachToComponent(TeleportCylinder, FAttachmentTransformRules::KeepRelativeTransform);
+
+			Arrow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
+			Arrow->AttachToComponent(TeleportCylinder, FAttachmentTransformRules::KeepRelativeTransform);
+			{
+				RoomScaleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Room Scale Mesh"));
+				RoomScaleMesh->AttachToComponent(Arrow, FAttachmentTransformRules::KeepRelativeTransform);
+			}
+		}
+	}
+
 	SteamVRChaperone = CreateDefaultSubobject<USteamVRChaperoneComponent>(TEXT("Chaperone"));
-	RoomScaleMesh    = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Room Scale Mesh"));
-	TeleportCylinder = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Teleport Cylinder"));
-	HandMesh         = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand Mesh"));
-	GrapSphere       = CreateDefaultSubobject<USphereComponent>(TEXT("Grab Sphere"));
-	ArcDirection     = CreateDefaultSubobject<UArrowComponent>(TEXT("Arc Direction"));
 	BeamMesh         = CreateDefaultSubobject<UStaticMesh>(TEXT("Beam Mesh"));
-	ArcEndPoint      = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arc End Point"));
-	Arrow            = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
-	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Motion Controller"));
 }
 
 void AMotionControllerCpp::DisableTeleporter()

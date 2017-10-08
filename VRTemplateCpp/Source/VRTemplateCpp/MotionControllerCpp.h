@@ -33,15 +33,17 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	bool IsValidTeleportDestination() const { return bIsValidTeleportDestination; }
 
    protected:
-	UPROPERTY(EditAnywhere) float TeleportLaunchVelocity           = 900.f;
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* TeleportCylinder = nullptr;
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* ArcEndPoint      = nullptr;
-	UPROPERTY(EditAnywhere) UStaticMesh* BeamMesh                  = nullptr;
-	UPROPERTY(EditAnywhere) UArrowComponent* ArcDirection          = nullptr;
+	UPROPERTY(EditAnywhere) float TeleportLaunchVelocity = 900.f;
 	UPROPERTY(EditAnywhere) TEnumAsByte<EObjectTypeQuery> TeleportTraceQuery;
+	UPROPERTY(EditAnywhere) UStaticMesh* BeamMesh = nullptr;
+
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* TeleportCylinder = nullptr;
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* ArcEndPoint      = nullptr;
+	UPROPERTY(VisibleAnywhere) UArrowComponent* ArcDirection          = nullptr;
+	UPROPERTY(VisibleAnywhere) USplineComponent* ArcSpline            = nullptr;
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Ring             = nullptr;
 
    private:
-	UPROPERTY() USplineComponent* ArcSpline = nullptr;
 	UPROPERTY() TArray<USplineMeshComponent*> SplineMeshes;
 
 	bool     bIsTeleporterActive         = false;
@@ -67,7 +69,7 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	void ReleaseActor();
 
    protected:
-	UPROPERTY(EditAnywhere) USphereComponent* GrapSphere = nullptr;
+	UPROPERTY(VisibleAnywhere) USphereComponent* GrapSphere = nullptr;
 
    private:
 	bool  bWantsToGrip = false;
@@ -92,7 +94,7 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 
 #pragma region Room Scale
    protected:
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* RoomScaleMesh = nullptr;
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* RoomScaleMesh = nullptr;
 
    private:
 	UPROPERTY() USteamVRChaperoneComponent* SteamVRChaperone = nullptr;
@@ -109,10 +111,11 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	FRotator GetInitialControllerRotation() const { return InitialControllerRotation; }
 
    protected:
-	UPROPERTY(EditAnywhere) UStaticMeshComponent* Arrow                  = nullptr;
-	UPROPERTY(EditAnywhere) USkeletalMeshComponent* HandMesh             = nullptr;
-	UPROPERTY(EditAnywhere) UMotionControllerComponent* MotionController = nullptr;
-	UPROPERTY(EditAnywhere) UHapticFeedbackEffect_Base* RumbleHaptics    = nullptr;
+	UPROPERTY(EditAnywhere) UHapticFeedbackEffect_Base* RumbleHaptics = nullptr;
+
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Arrow                  = nullptr;
+	UPROPERTY(VisibleAnywhere) USkeletalMeshComponent* HandMesh             = nullptr;
+	UPROPERTY(VisibleAnywhere) UMotionControllerComponent* MotionController = nullptr;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
