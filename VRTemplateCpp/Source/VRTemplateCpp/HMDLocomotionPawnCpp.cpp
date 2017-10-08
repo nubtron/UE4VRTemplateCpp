@@ -262,11 +262,6 @@ FVector AHMDLocomotionPawnCpp::GetThumstickFacingDirection() const
 {
 	// Create a look-at vector based on gamepad input rotated by the camera facing direction
 
-	// FIXME
-	// const auto* const PlayerController = CastChecked<APlayerController>(GetController());
-	// const auto* const InputComponent   = PlayerController->InputComponent;
-	// check(IsValid(InputComponent));
-
 	const float   TeleportUpAxisValue    = GetInputAxisValue(TEXT("TeleportDirectionUp"));
 	const float   TeleportRightAxisValue = GetInputAxisValue(TEXT("TeleportDirectionRight"));
 	const FVector TeleportDirection      = FVector{TeleportUpAxisValue, TeleportRightAxisValue, 0.f}.GetSafeNormal();
