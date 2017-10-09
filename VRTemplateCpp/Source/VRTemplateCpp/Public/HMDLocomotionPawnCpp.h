@@ -31,7 +31,7 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	UPROPERTY(VisibleAnywhere) UArrowComponent* TraceDirection   = nullptr;
 	UPROPERTY(VisibleAnywhere) UCameraComponent* Camera          = nullptr;
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Arrow       = nullptr;
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Ring       = nullptr;
+	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Ring        = nullptr;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -50,11 +50,16 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	bool     bCurrentLocationValid = false;
 	bool     bLocationFound        = false;
 
+	float TeleportUpAxisValue    = 0.f;
+	float TeleportRightAxisValue = 0.f;
+
 	void ResetOrientationAndPosition();
 	void SetupHMDCameraHeight();
 	void HandleTeleportation();
 	void UpdateTeleportDirection();
 
+	void HandleTeleportDirectionUpInput(float Value) { TeleportUpAxisValue = Value; }
+	void HandleTeleportDirectionRightInput(float Value) { TeleportRightAxisValue = Value; }
 	void HandleHMDTeleportPressed();
 	void HandleHMDTeleportReleased();
 	void FinishTeleport();

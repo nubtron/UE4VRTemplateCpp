@@ -40,9 +40,6 @@ AHMDLocomotionPawnCpp::AHMDLocomotionPawnCpp()
 			Ring->AttachToComponent(TeleportPin, FAttachmentTransformRules::KeepRelativeTransform);
 		}
 	}
-
-
-
 }
 
 void AHMDLocomotionPawnCpp::BeginPlay()
@@ -65,10 +62,15 @@ void AHMDLocomotionPawnCpp::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	check(IsValid(PlayerInputComponent));
+
 	PlayerInputComponent->BindAction(
 	    TEXT("ResetOrientationAndPosition"), IE_Pressed, this, &ThisClass::ResetOrientationAndPosition);
+
 	PlayerInputComponent->BindAction(TEXT("HMDTeleport"), IE_Pressed, this, &ThisClass::HandleHMDTeleportPressed);
 	PlayerInputComponent->BindAction(TEXT("HMDTeleport"), IE_Released, this, &ThisClass::HandleHMDTeleportReleased);
+
+	PlayerInputComponent->BindAxis(TEXT("TeleportDirectionRight"), this, &ThisClass::HandleTeleportDirectionRightInput);
+	PlayerInputComponent->BindAxis(TEXT("TeleportDirectionUp"), this, &ThisClass::HandleTeleportDirectionUpInput);
 }
 
 void AHMDLocomotionPawnCpp::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -261,11 +263,7 @@ bool AHMDLocomotionPawnCpp::GetTeleportDestination(FVector& OutLocation, FVector
 FVector AHMDLocomotionPawnCpp::GetThumstickFacingDirection() const
 {
 	// Create a look-at vector based on gamepad input rotated by the camera facing direction
-
-	const float   TeleportUpAxisValue    = GetInputAxisValue(TEXT("TeleportDirectionUp"));
-	const float   TeleportRightAxisValue = GetInputAxisValue(TEXT("TeleportDirectionRight"));
-	const FVector TeleportDirection      = FVector{TeleportUpAxisValue, TeleportRightAxisValue, 0.f}.GetSafeNormal();
-
+	const FVector TeleportDirection = FVector{TeleportUpAxisValue, TeleportRightAxisValue, 0.f}.GetSafeNormal();
 	check(IsValid(Camera));
 	const FVector  PinToCamera         = Camera->GetComponentLocation() - PinnedLocation;
 	const FRotator PinToCameraRotation = UKismetMathLibrary::MakeRotFromX(PinToCamera);
