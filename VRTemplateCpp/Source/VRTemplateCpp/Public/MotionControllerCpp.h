@@ -36,6 +36,7 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	UPROPERTY(EditAnywhere) float TeleportLaunchVelocity = 900.f;
 	UPROPERTY(EditAnywhere) TEnumAsByte<EObjectTypeQuery> TeleportTraceQuery;
 	UPROPERTY(EditAnywhere) UStaticMesh* BeamMesh = nullptr;
+	UPROPERTY(EditAnywhere) UMaterialInterface* BeamMaterial = nullptr;
 
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* TeleportCylinder = nullptr;
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* ArcEndPoint      = nullptr;

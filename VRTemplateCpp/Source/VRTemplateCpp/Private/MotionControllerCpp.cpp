@@ -23,6 +23,7 @@ AMotionControllerCpp::AMotionControllerCpp()
 	PrimaryActorTick.bCanEverTick = true;
 
 	auto* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	SetRootComponent(SceneRoot);
 	{
 		MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Motion Controller"));
 		MotionController->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
@@ -158,6 +159,9 @@ void AMotionControllerCpp::BeginPlay()
 		check(IsValid(RoomScaleMesh));
 		RoomScaleMesh->SetVisibility(false, /*bPropagateToChildren*/ false);
 	}
+
+	check(IsValid(MotionController));
+	MotionController->Hand = Hand;
 
 	// Invert scale on hand mesh to create left-hand
 	if (Hand == EControllerHand::Left)
@@ -407,6 +411,12 @@ void AMotionControllerCpp::UpdateArcSpline(const bool bFoundValidLocation, const
 		auto* const NewSplineMesh = NewObject<USplineMeshComponent>(this);
 		check(IsValid(NewSplineMesh));
 		NewSplineMesh->SetStaticMesh(BeamMesh);
+		check(IsValid(BeamMaterial));
+		NewSplineMesh->SetMaterial(/*ElementIndex*/ 0, BeamMaterial);
+		NewSplineMesh->SetMobility(EComponentMobility::Movable);
+		NewSplineMesh->SetStartScale({ 4.f, 4.f });
+		NewSplineMesh->SetEndScale({ 4.f, 4.f });
+		NewSplineMesh->SetBoundaryMax(1.f);
 		NewSplineMesh->RegisterComponent();
 		SplineMeshes.Add(NewSplineMesh);
 

@@ -18,7 +18,8 @@ AHMDLocomotionPawnCpp::AHMDLocomotionPawnCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	auto* SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	auto* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	SetRootComponent(SceneRoot);
 	{
 		VROrigin = CreateDefaultSubobject<USceneComponent>(TEXT("VR Origin"));
 		VROrigin->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
@@ -57,7 +58,7 @@ void AHMDLocomotionPawnCpp::Tick(float DeltaTime)
 	HandleTeleportation();
 }
 
-void AHMDLocomotionPawnCpp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AHMDLocomotionPawnCpp::SetupPlayerInputComponent(UInputComponent* const PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 

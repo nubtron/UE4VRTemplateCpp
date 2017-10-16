@@ -11,7 +11,9 @@
 AMotionControllerPawnCpp::AMotionControllerPawnCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	VROrigin                      = CreateDefaultSubobject<USceneComponent>("VR Origin");
+
+	VROrigin = CreateDefaultSubobject<USceneComponent>("VR Origin");
+	SetRootComponent(VROrigin);
 }
 
 void AMotionControllerPawnCpp::BeginPlay()
@@ -30,18 +32,14 @@ void AMotionControllerPawnCpp::Tick(float DeltaTime)
 	check(IsValid(LeftController));
 	if (LeftController->IsTeleporterActive())
 	{
-		const auto AxisX = GetInputAxisValue(TEXT("MotionControllerThumbLeft_X"));
-		const auto AxisY = GetInputAxisValue(TEXT("MotionControllerThumbLeft_Y"));
-		TeleportRotation = GetRotationFromInput(AxisY, AxisX, LeftController);
+		TeleportRotation = GetRotationFromInput(ThumbLeftInput.Y, ThumbLeftInput.X, LeftController);
 	}
-	
+
 	// Right Hand Teleport Rotation
 	check(IsValid(RightController));
 	if (RightController->IsTeleporterActive())
 	{
-		const auto AxisX = GetInputAxisValue(TEXT("MotionControllerThumbRight_X"));
-		const auto AxisY = GetInputAxisValue(TEXT("MotionControllerThumbRight_Y"));
-		TeleportRotation = GetRotationFromInput(AxisY, AxisX, RightController);
+		TeleportRotation = GetRotationFromInput(ThumbRightInput.Y, ThumbRightInput.X, RightController);
 	}
 }
 
@@ -70,6 +68,12 @@ void AMotionControllerPawnCpp::SetupPlayerInputComponent(UInputComponent* const 
 	    TEXT("TeleportRight"), IE_Pressed, this, &AMotionControllerPawnCpp::TeleportRight_HandlePressed);
 	PlayerInputComponent->BindAction(
 	    TEXT("TeleportRight"), IE_Released, this, &AMotionControllerPawnCpp::TeleportRight_HandleReleased);
+
+	
+	PlayerInputComponent->BindAxis(TEXT("MotionControllerThumbLeft_X"), this, &ThisClass::MotionControllerThumbLeft_X_HandleAxisInput);
+	PlayerInputComponent->BindAxis(TEXT("MotionControllerThumbLeft_Y"), this, &ThisClass::MotionControllerThumbLeft_Y_HandleAxisInput);
+	PlayerInputComponent->BindAxis(TEXT("MotionControllerThumbRight_X"), this, &ThisClass::MotionControllerThumbRight_X_HandleAxisInput);
+	PlayerInputComponent->BindAxis(TEXT("MotionControllerThumbRight_Y"), this, &ThisClass::MotionControllerThumbRight_Y_HandleAxisInput);
 }
 
 void AMotionControllerPawnCpp::SetupPlayerHeight()
