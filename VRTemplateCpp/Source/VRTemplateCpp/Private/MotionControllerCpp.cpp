@@ -98,7 +98,6 @@ void AMotionControllerCpp::GrabActor()
 	auto* const NearestMesh = GetActorNearHand();
 	if (!IsValid(NearestMesh)) return;
 	AttachedActor = NearestMesh;
-
 	if (auto* const PickupActor = Cast<IPickupActor>(AttachedActor))
 	{
 		check(IsValid(MotionController));
@@ -115,6 +114,7 @@ void AMotionControllerCpp::ReleaseActor()
 	const auto* AttachedActorRoot = AttachedActor->GetRootComponent();
 	check(IsValid(AttachedActorRoot));
 	check(IsValid(MotionController));
+
 	// Make sure this hand is still holding the Actor (May have been taken by another hand / event)
 	if (AttachedActorRoot->GetAttachParent() == MotionController)
 	{
@@ -184,9 +184,9 @@ void AMotionControllerCpp::Tick(const float DeltaTime)
 	UpdateRoomScaleOutline();
 
 	// Only let hand collide with environment while gripping
-	check(IsValid(HandMesh));
 	const auto HandCollisionMode =
 	    GripState == EGrip::Grab ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
+	check(IsValid(HandMesh));
 	HandMesh->SetCollisionEnabled(HandCollisionMode);
 
 	HandleTeleportArc();
@@ -487,14 +487,14 @@ AActor* AMotionControllerCpp::GetActorNearHand() const
 	GrapSphere->GetOverlappingActors(/*out*/ OverlappingActors);
 
 	AActor* NearestOverlappingActor = nullptr;
-	float   NearestOverlap          = TNumericLimits<float>::Min();
+	float   NearestOverlap          = TNumericLimits<float>::Max();
 	for (auto* const Actor : OverlappingActors)
 	{
 		if (!IsValid(Actor)) continue;
 
 		// Filter to Actors that implement our interface for pickup / dropping
 		// We want to only grab simulated meshes.
-		if (!Actor->IsA(UPickupActor::StaticClass())) continue;
+		if (!Cast<IPickupActor>(Actor)) continue;
 
 		const float DistanceToActor = FVector::Distance(GrapSphere->GetComponentLocation(), Actor->GetActorLocation());
 		if (DistanceToActor < NearestOverlap)

@@ -18,6 +18,6 @@ void APickupCubeCpp::Drop()
 {
 	auto* const StaticMeshComponent = GetStaticMeshComponent();
 	check(IsValid(StaticMeshComponent));
-	StaticMeshComponent->SetSimulatePhysics(false);
+	StaticMeshComponent->SetSimulatePhysics(true);
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 }
