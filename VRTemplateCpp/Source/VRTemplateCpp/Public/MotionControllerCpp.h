@@ -31,6 +31,7 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	void GetTeleportDestination(FVector& OutPosition, FRotator& OutRotation) const;
 	bool IsTeleporterActive() const { return bIsTeleporterActive; }
 	bool IsValidTeleportDestination() const { return bIsValidTeleportDestination; }
+	void SetTeleportRotation(const FRotator& Rotation) { TeleportRotation = Rotation; }
 
    protected:
 	UPROPERTY(EditAnywhere) float TeleportLaunchVelocity = 900.f;

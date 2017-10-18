@@ -34,7 +34,6 @@ class VRTEMPLATECPP_API AMotionControllerPawnCpp : public APawn
 
 	bool     bUseControllerRollToRotate = false;
 	bool     bIsTeleporting             = false;
-	FRotator TeleportRotation           = FRotator::ZeroRotator;
 
 	FVector2D ThumbLeftInput = FVector2D::ZeroVector;
 	FVector2D ThumbRightInput = FVector2D::ZeroVector;
@@ -59,10 +58,22 @@ class VRTEMPLATECPP_API AMotionControllerPawnCpp : public APawn
 	void TeleportRight_HandlePressed();
 	void TeleportRight_HandleReleased();
 
-	void MotionControllerThumbLeft_X_HandleAxisInput(float Value) { ThumbLeftInput.X = Value; }
-	void MotionControllerThumbLeft_Y_HandleAxisInput(float Value) { ThumbLeftInput.Y = Value; }
-	void MotionControllerThumbRight_X_HandleAxisInput(float Value) { ThumbRightInput.X = Value; }
-	void MotionControllerThumbRight_Y_HandleAxisInput(float Value) { ThumbRightInput.Y = Value; }
+	void MotionControllerThumbLeft_X_HandleAxisInput(float Value)
+	{
+		ThumbLeftInput.X = Value;
+	}
+	void MotionControllerThumbLeft_Y_HandleAxisInput(float Value)
+	{
+		ThumbLeftInput.Y = Value;
+	}
+	void MotionControllerThumbRight_X_HandleAxisInput(float Value)
+	{
+		ThumbRightInput.X = Value;
+	}
+	void MotionControllerThumbRight_Y_HandleAxisInput(float Value)
+	{
+		ThumbRightInput.Y = Value;
+	}
 
 	FRotator GetRotationFromInput(float UpAxis, float RightAxis, const AMotionControllerCpp* MotionController) const;
 };

@@ -32,14 +32,14 @@ void AMotionControllerPawnCpp::Tick(float DeltaTime)
 	check(IsValid(LeftController));
 	if (LeftController->IsTeleporterActive())
 	{
-		TeleportRotation = GetRotationFromInput(ThumbLeftInput.Y, ThumbLeftInput.X, LeftController);
+		LeftController->SetTeleportRotation(GetRotationFromInput(ThumbLeftInput.Y, ThumbLeftInput.X, LeftController));
 	}
 
 	// Right Hand Teleport Rotation
 	check(IsValid(RightController));
 	if (RightController->IsTeleporterActive())
 	{
-		TeleportRotation = GetRotationFromInput(ThumbRightInput.Y, ThumbRightInput.X, RightController);
+		RightController->SetTeleportRotation(GetRotationFromInput(ThumbRightInput.Y, ThumbRightInput.X, RightController));
 	}
 }
 
