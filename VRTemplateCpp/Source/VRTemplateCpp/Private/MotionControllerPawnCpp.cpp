@@ -14,7 +14,7 @@ AMotionControllerPawnCpp::AMotionControllerPawnCpp()
 
 	VROrigin = CreateDefaultSubobject<USceneComponent>("VR Origin");
 	SetRootComponent(VROrigin);
-}
+} 
 
 void AMotionControllerPawnCpp::BeginPlay()
 {
@@ -111,16 +111,16 @@ void AMotionControllerPawnCpp::SetupMotionControllers()
 
 AMotionControllerCpp* AMotionControllerPawnCpp::SetupMotionController(const EControllerHand Hand)
 {
-	auto* const World = GetWorld();
+	UWorld* const World = GetWorld();
 	check(IsValid(World));
 	check(IsValid(MotionControllerCppClass));
 
-	auto* const MotionController =
-	    World->SpawnActorDeferred<AMotionControllerCpp>(MotionControllerCppClass,
-	                                                    FTransform::Identity,
-	                                                    /*Owner*/ this,
-	                                                    /*Instigator*/ nullptr,
-	                                                    ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	AMotionControllerCpp* const MotionController =
+		World->SpawnActorDeferred<AMotionControllerCpp>(MotionControllerCppClass,
+		                                                FTransform::Identity,
+		                                                /*Owner*/ this,
+		                                                /*Instigator*/ nullptr,
+		                                                ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	check(IsValid(MotionController));
 	MotionController->Hand = Hand;
 	UGameplayStatics::FinishSpawningActor(MotionController, FTransform::Identity);
@@ -133,7 +133,10 @@ AMotionControllerCpp* AMotionControllerPawnCpp::SetupMotionController(const ECon
 
 void AMotionControllerPawnCpp::ExecuteTeleportation(AMotionControllerCpp* const MotionController)
 {
-	if (bIsTeleporting) return;
+	if (bIsTeleporting) 
+	{
+		return;
+	}
 
 	check(IsValid(MotionController));
 	if (!MotionController->IsValidTeleportDestination())
@@ -143,7 +146,7 @@ void AMotionControllerPawnCpp::ExecuteTeleportation(AMotionControllerCpp* const 
 	}
 
 	bIsTeleporting                  = true;
-	auto* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	APlayerCameraManager* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 	check(IsValid(PlayerCameraManager));
 	PlayerCameraManager->StartCameraFade(/*FromAlpha*/ 0.f,
 	                                     /*ToAlpha*/ 1.f,
@@ -161,7 +164,10 @@ void AMotionControllerPawnCpp::ExecuteTeleportation(AMotionControllerCpp* const 
 
 void AMotionControllerPawnCpp::FinishTeleportation(const TWeakObjectPtr<AMotionControllerCpp> MotionController)
 {
-	if (!MotionController.IsValid()) return;
+	if (!MotionController.IsValid()) 
+	{
+		return;
+	}
 	MotionController->DisableTeleporter();
 
 	FVector  TeleportLocation;
@@ -169,7 +175,7 @@ void AMotionControllerPawnCpp::FinishTeleportation(const TWeakObjectPtr<AMotionC
 	MotionController->GetTeleportDestination(/*out*/ TeleportLocation, /*out*/ TeleportRotation);
 	TeleportTo(TeleportLocation, TeleportRotation);
 
-	auto* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	APlayerCameraManager* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 	check(IsValid(PlayerCameraManager));
 	PlayerCameraManager->StartCameraFade(/*FromAlpha*/ 1.f,
 	                                     /*ToAlpha*/ 0.f,
@@ -216,7 +222,10 @@ void AMotionControllerPawnCpp::TeleportLeft_HandlePressed()
 void AMotionControllerPawnCpp::TeleportLeft_HandleReleased()
 {
 	check(IsValid(LeftController));
-	if (!LeftController->IsTeleporterActive()) return;
+	if (!LeftController->IsTeleporterActive()) 
+	{
+		return;
+	}
 	ExecuteTeleportation(LeftController);
 }
 
@@ -231,7 +240,10 @@ void AMotionControllerPawnCpp::TeleportRight_HandlePressed()
 void AMotionControllerPawnCpp::TeleportRight_HandleReleased()
 {
 	check(IsValid(RightController));
-	if (!RightController->IsTeleporterActive()) return;
+	if (!RightController->IsTeleporterActive()) 
+	{
+		return;
+	}
 	ExecuteTeleportation(RightController);
 }
 

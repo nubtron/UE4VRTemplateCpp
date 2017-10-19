@@ -18,6 +18,6 @@ class VRTEMPLATECPP_API APickupCubeCpp : public AStaticMeshActor, public IPickup
 	
 	
 public:
-	void AttachTo(USceneComponent* SceneComponent) override;
+	void AttachTo(USceneComponent* const SceneComponent) override;
 	void Drop() override;
 };

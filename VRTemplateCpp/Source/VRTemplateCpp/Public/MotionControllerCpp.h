@@ -34,19 +34,36 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	void SetTeleportRotation(const FRotator& Rotation) { TeleportRotation = Rotation; }
 
    protected:
-	UPROPERTY(EditAnywhere) float TeleportLaunchVelocity = 900.f;
-	UPROPERTY(EditAnywhere) TEnumAsByte<EObjectTypeQuery> TeleportTraceQuery;
-	UPROPERTY(EditAnywhere) UStaticMesh* BeamMesh = nullptr;
-	UPROPERTY(EditAnywhere) UMaterialInterface* BeamMaterial = nullptr;
+	UPROPERTY(EditAnywhere)
+	float TeleportLaunchVelocity = 900.f;
 
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* TeleportCylinder = nullptr;
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* ArcEndPoint      = nullptr;
-	UPROPERTY(VisibleAnywhere) UArrowComponent* ArcDirection          = nullptr;
-	UPROPERTY(VisibleAnywhere) USplineComponent* ArcSpline            = nullptr;
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Ring             = nullptr;
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EObjectTypeQuery> TeleportTraceQuery;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* BeamMesh;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* BeamMaterial;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* TeleportCylinder;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ArcEndPoint;
+
+	UPROPERTY(VisibleAnywhere)
+	UArrowComponent* ArcDirection;
+
+	UPROPERTY(VisibleAnywhere)
+	USplineComponent* ArcSpline;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Ring;
 
    private:
-	UPROPERTY() TArray<USplineMeshComponent*> SplineMeshes;
+	UPROPERTY()
+	TArray<USplineMeshComponent*> SplineMeshes;
 
 	bool     bIsTeleporterActive         = false;
 	bool     bLastFrameValidDestination  = false;
@@ -58,9 +75,9 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	bool TraceTeleportDestination(TArray<FVector>& OutTracePoints,
 	                              FVector&         OutNavMeshLocation,
 	                              FVector&         OutTraceLocation) const;
-	void RumbleController(float Intensity);
-	void UpdateArcSpline(bool bFoundValidLocation, const TArray<FVector>& SplinePoints);
-	void UpdateArcEndpoint(const FVector& NewLocation, bool bValidLocationFound);
+	void RumbleController(const float Intensity);
+	void UpdateArcSpline(const bool bFoundValidLocation, const TArray<FVector>& SplinePoints);
+	void UpdateArcEndpoint(const FVector& NewLocation, const bool bValidLocationFound);
 
 #pragma endregion
 
@@ -71,7 +88,8 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	void ReleaseActor();
 
    protected:
-	UPROPERTY(VisibleAnywhere) USphereComponent* GrapSphere = nullptr;
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* GrapSphere;
 
    private:
 	bool  bWantsToGrip = false;
@@ -96,11 +114,15 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 
 #pragma region Room Scale
    protected:
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* RoomScaleMesh = nullptr;
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* RoomScaleMesh;
 
    private:
-	UPROPERTY() USteamVRChaperoneComponent* SteamVRChaperone = nullptr;
-	UPROPERTY() AActor* AttachedActor                        = nullptr;
+	UPROPERTY()
+	USteamVRChaperoneComponent* SteamVRChaperone;
+
+	UPROPERTY()
+	AActor* AttachedActor;
 
 	void SetupRoomscaleOutline();
 	void UpdateRoomScaleOutline();
@@ -113,11 +135,17 @@ class VRTEMPLATECPP_API AMotionControllerCpp : public AActor
 	FRotator GetInitialControllerRotation() const { return InitialControllerRotation; }
 
    protected:
-	UPROPERTY(EditAnywhere) UHapticFeedbackEffect_Base* RumbleHaptics = nullptr;
+	UPROPERTY(EditAnywhere)
+	UHapticFeedbackEffect_Base* RumbleHaptics;
 
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Arrow                  = nullptr;
-	UPROPERTY(VisibleAnywhere) USkeletalMeshComponent* HandMesh             = nullptr;
-	UPROPERTY(VisibleAnywhere) UMotionControllerComponent* MotionController = nullptr;
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Arrow;
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* HandMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	UMotionControllerComponent* MotionController;
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

@@ -20,27 +20,50 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	AHMDLocomotionPawnCpp();
 
    protected:
-	UPROPERTY(EditAnywhere) float DefaultPlayerHeight      = 180.f;
-	UPROPERTY(EditAnywhere) float RotationLengthThreshold  = 100.f;
-	UPROPERTY(EditAnywhere) float FadeOutDuration          = 0.1f;
-	UPROPERTY(EditAnywhere) float FadeInDuration           = 0.2f;
-	UPROPERTY(EditAnywhere) FLinearColor TeleportFadeColor = FLinearColor::Black;
-	UPROPERTY(EditAnywhere) TEnumAsByte<EObjectTypeQuery> TeleportTraceObjectType;
+	UPROPERTY(EditAnywhere)
+	float DefaultPlayerHeight = 180.f;
 
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* TeleportPin = nullptr;
-	UPROPERTY(VisibleAnywhere) UArrowComponent* TraceDirection   = nullptr;
-	UPROPERTY(VisibleAnywhere) UCameraComponent* Camera          = nullptr;
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Arrow       = nullptr;
-	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* Ring        = nullptr;
+	UPROPERTY(EditAnywhere)
+	float RotationLengthThreshold = 100.f;
+
+	UPROPERTY(EditAnywhere)
+	float FadeOutDuration = 0.1f;
+
+	UPROPERTY(EditAnywhere)
+	float FadeInDuration = 0.2f;
+
+	UPROPERTY(EditAnywhere)
+	FLinearColor TeleportFadeColor = FLinearColor::Black;
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EObjectTypeQuery> TeleportTraceObjectType;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* TeleportPin;
+
+	UPROPERTY(VisibleAnywhere)
+	UArrowComponent* TraceDirection;
+
+	UPROPERTY(VisibleAnywhere)
+	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Arrow;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Ring;
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Tick(const float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* const PlayerInputComponent) override;
 	void         EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
    private:
-	UPROPERTY() USceneComponent* VROrigin                 = nullptr;
-	UPROPERTY() UMaterialInstanceDynamic* RingGlowMatInst = nullptr;
+	UPROPERTY()
+	USceneComponent* VROrigin;
+
+	UPROPERTY()
+	UMaterialInstanceDynamic* RingGlowMatInst;
 
 	FVector  CurrentLookAtLocation = FVector::ZeroVector;
 	FVector  PinnedLocation        = FVector::ZeroVector;
@@ -58,8 +81,8 @@ class VRTEMPLATECPP_API AHMDLocomotionPawnCpp : public APawn
 	void HandleTeleportation();
 	void UpdateTeleportDirection();
 
-	void HandleTeleportDirectionUpInput(float Value) { TeleportUpAxisValue = Value; }
-	void HandleTeleportDirectionRightInput(float Value) { TeleportRightAxisValue = Value; }
+	void HandleTeleportDirectionUpInput(const float Value) { TeleportUpAxisValue = Value; }
+	void HandleTeleportDirectionRightInput(const float Value) { TeleportRightAxisValue = Value; }
 	void HandleHMDTeleportPressed();
 	void HandleHMDTeleportReleased();
 	void FinishTeleport();

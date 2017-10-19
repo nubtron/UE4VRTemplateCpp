@@ -18,6 +18,6 @@ class IPickupActor : public IInterface
 	GENERATED_BODY()
 
    public:
-	virtual void AttachTo(USceneComponent* SceneComponent) = 0;
-	virtual void Drop()                                    = 0;
+	virtual void AttachTo(USceneComponent* const SceneComponent) = 0;
+	virtual void Drop()                                          = 0;
 };

@@ -22,7 +22,7 @@ AMotionControllerCpp::AMotionControllerCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	auto* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
+	USceneComponent* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	SetRootComponent(SceneRoot);
 	{
 		MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Motion Controller"));
@@ -64,7 +64,11 @@ AMotionControllerCpp::AMotionControllerCpp()
 
 void AMotionControllerCpp::DisableTeleporter()
 {
-	if (!bIsTeleporterActive) return;
+	if (!bIsTeleporterActive)
+	{
+		return;
+	}
+
 	bIsTeleporterActive = false;
 
 	check(IsValid(TeleportCylinder));
@@ -94,11 +98,16 @@ void AMotionControllerCpp::GetTeleportDestination(FVector& OutPosition, FRotator
 
 void AMotionControllerCpp::GrabActor()
 {
-	bWantsToGrip            = true;
-	auto* const NearestMesh = GetActorNearHand();
-	if (!IsValid(NearestMesh)) return;
+	bWantsToGrip              = true;
+	AActor* const NearestMesh = GetActorNearHand();
+
+	if (!IsValid(NearestMesh)) 
+	{
+		return;
+	}
+
 	AttachedActor = NearestMesh;
-	if (auto* const PickupActor = Cast<IPickupActor>(AttachedActor))
+	if (IPickupActor* const PickupActor = Cast<IPickupActor>(AttachedActor))
 	{
 		check(IsValid(MotionController));
 		PickupActor->AttachTo(MotionController);
@@ -109,16 +118,19 @@ void AMotionControllerCpp::GrabActor()
 void AMotionControllerCpp::ReleaseActor()
 {
 	bWantsToGrip = false;
-	if (!IsValid(AttachedActor)) return;
+	if (!IsValid(AttachedActor)) 
+	{
+		return;
+	}
 
-	const auto* AttachedActorRoot = AttachedActor->GetRootComponent();
+	const USceneComponent* AttachedActorRoot = AttachedActor->GetRootComponent();
 	check(IsValid(AttachedActorRoot));
 	check(IsValid(MotionController));
 
 	// Make sure this hand is still holding the Actor (May have been taken by another hand / event)
 	if (AttachedActorRoot->GetAttachParent() == MotionController)
 	{
-		if (auto* const PickupActor = Cast<IPickupActor>(AttachedActor))
+		if (IPickupActor* const PickupActor = Cast<IPickupActor>(AttachedActor))
 		{
 			PickupActor->Drop();
 			RumbleController(/*Intensity*/ 0.2f);
@@ -184,7 +196,7 @@ void AMotionControllerCpp::Tick(const float DeltaTime)
 	UpdateRoomScaleOutline();
 
 	// Only let hand collide with environment while gripping
-	const auto HandCollisionMode =
+	const ECollisionEnabled::Type HandCollisionMode =
 	    GripState == EGrip::Grab ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 	check(IsValid(HandMesh));
 	HandMesh->SetCollisionEnabled(HandCollisionMode);
@@ -195,10 +207,10 @@ void AMotionControllerCpp::Tick(const float DeltaTime)
 void AMotionControllerCpp::SetupRoomscaleOutline()
 {
 	check(IsValid(SteamVRChaperone));
-	const auto ChaperoneBounds = SteamVRChaperone->GetBounds();
-	FVector    ChaperoneCenter;
-	FRotator   ChaperoneRotation;
-	FVector2D  ChaperoneSize;
+	const TArray<FVector> ChaperoneBounds = SteamVRChaperone->GetBounds();
+	FVector               ChaperoneCenter;
+	FRotator              ChaperoneRotation;
+	FVector2D             ChaperoneSize;
 	UKismetMathLibrary::MinimumAreaRectangle(this,
 	                                         ChaperoneBounds,
 	                                         FVector::UpVector,
@@ -212,7 +224,10 @@ void AMotionControllerCpp::SetupRoomscaleOutline()
 	const bool bIsRoomScale =
 	    !FMath::IsNearlyEqual(ChaperoneSize.X, 100.f) || !FMath::IsNearlyEqual(ChaperoneSize.Y, 100.f);
 
-	if (!bIsRoomScale) return;
+	if (!bIsRoomScale)
+	{
+		return;
+	}
 
 	check(IsValid(RoomScaleMesh));
 	const float ChaperoneMeshHeight = 70.f;
@@ -228,7 +243,7 @@ void AMotionControllerCpp::UpdateAnimationOfHand()
 		return;
 	}
 
-	const auto* const ActorNearHand = GetActorNearHand();
+	const AActor* const ActorNearHand = GetActorNearHand();
 	if (!IsValid(ActorNearHand))
 	{
 		GripState = EGrip::CanGrab;
@@ -251,14 +266,17 @@ void AMotionControllerCpp::UpdateAnimationOfHand()
 void AMotionControllerCpp::UpdateHandMeshAnimation()
 {
 	check(IsValid(HandMesh));
-	auto* const HandAnimInstance = CastChecked<UHandAnimInstance>(HandMesh->GetAnimInstance());
+	UHandAnimInstance* const HandAnimInstance = CastChecked<UHandAnimInstance>(HandMesh->GetAnimInstance());
 	HandAnimInstance->SetGripState(GripState);
 }
 
 void AMotionControllerCpp::UpdateRoomScaleOutline()
 {
 	check(IsValid(RoomScaleMesh));
-	if (!RoomScaleMesh->IsVisible()) return;
+	if (!RoomScaleMesh->IsVisible())
+	{
+		return;
+	}
 
 	// Update Room-scale outline location relative to Teleport target
 	FRotator DeviceRotation;
@@ -275,7 +293,10 @@ void AMotionControllerCpp::UpdateRoomScaleOutline()
 void AMotionControllerCpp::HandleTeleportArc()
 {
 	ClearArc();
-	if (!bIsTeleporterActive) return;
+	if (!bIsTeleporterActive) 
+	{
+		return;
+	}
 
 	TArray<FVector> TracePoints;
 	FVector         NavMeshLocation;
@@ -321,9 +342,12 @@ void AMotionControllerCpp::HandleTeleportArc()
 
 void AMotionControllerCpp::ClearArc()
 {
-	for (auto* const SplineMesh : SplineMeshes)
+	for (USplineMeshComponent* const SplineMesh : SplineMeshes)
 	{
-		if (!IsValid(SplineMesh)) continue;
+		if (!IsValid(SplineMesh))
+		{
+			continue;
+		}
 		SplineMesh->DestroyComponent();
 	}
 	SplineMeshes.Empty();
@@ -371,7 +395,7 @@ bool AMotionControllerCpp::TraceTeleportDestination(TArray<FVector>& OutTracePoi
 
 void AMotionControllerCpp::RumbleController(const float Intensity)
 {
-	auto* const LocalPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	APlayerController* const LocalPlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	check(IsValid(LocalPlayerController));
 	LocalPlayerController->PlayHapticEffect(RumbleHaptics, Hand, Intensity);
 }
@@ -391,7 +415,7 @@ void AMotionControllerCpp::UpdateArcSpline(const bool bFoundValidLocation, const
 	}
 
 	check(IsValid(ArcSpline));
-	for (const auto& SplinePoint : SplinePoints)
+	for (const FVector& SplinePoint : SplinePoints)
 	{
 		// Build a spline from all trace points. This generates tangets we can use to build a smoothly curved spline
 		// mesh
@@ -408,14 +432,14 @@ void AMotionControllerCpp::UpdateArcSpline(const bool bFoundValidLocation, const
 	for (int32 i = 0; i < LargestSplinePointIndex; ++i)
 	{
 		// Add new cylinder mesh
-		auto* const NewSplineMesh = NewObject<USplineMeshComponent>(this);
+		USplineMeshComponent* const NewSplineMesh = NewObject<USplineMeshComponent>(this);
 		check(IsValid(NewSplineMesh));
 		NewSplineMesh->SetStaticMesh(BeamMesh);
 		check(IsValid(BeamMaterial));
 		NewSplineMesh->SetMaterial(/*ElementIndex*/ 0, BeamMaterial);
 		NewSplineMesh->SetMobility(EComponentMobility::Movable);
-		NewSplineMesh->SetStartScale({ 4.f, 4.f });
-		NewSplineMesh->SetEndScale({ 4.f, 4.f });
+		NewSplineMesh->SetStartScale({4.f, 4.f});
+		NewSplineMesh->SetEndScale({4.f, 4.f});
 		NewSplineMesh->SetBoundaryMax(1.f);
 		NewSplineMesh->RegisterComponent();
 		SplineMeshes.Add(NewSplineMesh);
@@ -444,7 +468,7 @@ void AMotionControllerCpp::UpdateArcEndpoint(const FVector& NewLocation, const b
 	UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(DeviceRotation, DevicePosition);
 	const FRotator DeviceYaw{0.f, DeviceRotation.Yaw, 0.f};
 	// Combine the two rotations to get an accurate preview of where player will look to after a teleport.
-	const auto ArrowRotation = UKismetMathLibrary::ComposeRotators(TeleportRotation, DeviceYaw);
+	const FRotator ArrowRotation = UKismetMathLibrary::ComposeRotators(TeleportRotation, DeviceYaw);
 	Arrow->SetWorldRotation(ArrowRotation);
 
 	check(IsValid(RoomScaleMesh));
@@ -460,8 +484,11 @@ void AMotionControllerCpp::HandleBeginOverlap_GrabSphere(UPrimitiveComponent* co
 {
 	// Rumble Controller when overlapping valid StaticMesh
 
-	auto* const OtherStaticMesh = Cast<UStaticMeshComponent>(OtherComp);
-	if (!IsValid(OtherStaticMesh)) return;
+	UStaticMeshComponent* const OtherStaticMesh = Cast<UStaticMeshComponent>(OtherComp);
+	if (!IsValid(OtherStaticMesh)) 
+	{
+		return;
+	}
 
 	if (OtherStaticMesh->IsSimulatingPhysics())
 	{
@@ -488,13 +515,19 @@ AActor* AMotionControllerCpp::GetActorNearHand() const
 
 	AActor* NearestOverlappingActor = nullptr;
 	float   NearestOverlap          = TNumericLimits<float>::Max();
-	for (auto* const Actor : OverlappingActors)
+	for (AActor* const Actor : OverlappingActors)
 	{
-		if (!IsValid(Actor)) continue;
+		if (!IsValid(Actor)) 
+		{
+			continue;
+		}
 
 		// Filter to Actors that implement our interface for pickup / dropping
 		// We want to only grab simulated meshes.
-		if (!Cast<IPickupActor>(Actor)) continue;
+		if (!Cast<IPickupActor>(Actor)) 
+		{
+			continue;
+		}
 
 		const float DistanceToActor = FVector::Distance(GrapSphere->GetComponentLocation(), Actor->GetActorLocation());
 		if (DistanceToActor < NearestOverlap)
