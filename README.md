@@ -1,5 +1,5 @@
 # UE4VRTemplateCpp
-C++ translation of Epic Games' default VR template.
+C++ translation of Epic Games' default VR template, with the original comments.
 
 Tested on Vive.
 
