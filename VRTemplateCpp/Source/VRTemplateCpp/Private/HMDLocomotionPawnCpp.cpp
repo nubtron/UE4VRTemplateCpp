@@ -18,7 +18,7 @@ AHMDLocomotionPawnCpp::AHMDLocomotionPawnCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	auto* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
+	USceneComponent* const SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SetRootComponent(SceneRoot);
 	{
 		VROrigin = CreateDefaultSubobject<USceneComponent>(TEXT("VR Origin"));
@@ -123,7 +123,7 @@ void AHMDLocomotionPawnCpp::HandleTeleportation()
 	/***  Update teleport meshes position and orientations ***/
 
 	check(IsValid(Arrow));
-	const auto bShouldArrowBeVisible = ShouldUpdateFacingDirection() && bLocationPinned;
+	const bool bShouldArrowBeVisible = ShouldUpdateFacingDirection() && bLocationPinned;
 	Arrow->SetVisibility(bShouldArrowBeVisible);
 
 	// Adjust fall-off of the glowing cylinder.
@@ -142,7 +142,7 @@ void AHMDLocomotionPawnCpp::HandleTeleportation()
 		UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(/*out*/ DeviceOrientation,
 		                                                              /*out*/ DevicePosition);
 		const FRotator DeviceYaw{0.f, DeviceOrientation.Yaw, 0.f};
-		const auto     NewArrowRotation = UKismetMathLibrary::ComposeRotators(PinnedRotation, DeviceYaw);
+		const FRotator NewArrowRotation = UKismetMathLibrary::ComposeRotators(PinnedRotation, DeviceYaw);
 		Arrow->SetWorldRotation(NewArrowRotation);
 	}
 }
@@ -165,7 +165,10 @@ void AHMDLocomotionPawnCpp::UpdateTeleportDirection()
 void AHMDLocomotionPawnCpp::HandleHMDTeleportPressed()
 {
 	// Pin the current location we look at
-	if (!bCurrentLocationValid) return;
+	if (!bCurrentLocationValid)
+	{
+		return;
+	}
 
 	bLocationPinned = true;
 	bLocationFound  = true;
@@ -174,12 +177,18 @@ void AHMDLocomotionPawnCpp::HandleHMDTeleportPressed()
 
 void AHMDLocomotionPawnCpp::HandleHMDTeleportReleased()
 {
-	if (!bLocationPinned) return;
+	if (!bLocationPinned)
+	{
+		return;
+	}
 	bLocationPinned = false;
 
-	if (!bLocationFound) return;
+	if (!bLocationFound) 
+	{
+		return;
+	}
 
-	auto* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	APlayerCameraManager* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 	check(IsValid(PlayerCameraManager));
 
 	PlayerCameraManager->StartCameraFade(/*FromAlpha*/ 0.f,
@@ -210,7 +219,7 @@ void AHMDLocomotionPawnCpp::FinishTeleport()
 
 	TeleportTo(DestLocation, DestRotation);
 
-	auto* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	APlayerCameraManager* const PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
 	check(IsValid(PlayerCameraManager));
 
 	PlayerCameraManager->StartCameraFade(/*FromAlpha*/ 1.f, /*ToAlpha*/ 0.f, FadeInDuration, TeleportFadeColor);
@@ -227,8 +236,8 @@ bool AHMDLocomotionPawnCpp::GetTeleportDestination(FVector& OutLocation, FVector
 {
 	// Use Arrow component to set up trace origin and direction
 	check(IsValid(TraceDirection));
-	const auto StartPos       = TraceDirection->GetComponentLocation();
-	const auto LaunchVelocity = TraceDirection->GetComponentLocation() + TraceDirection->GetForwardVector() * 1000.f;
+	const FVector StartPos = TraceDirection->GetComponentLocation();
+	const FVector LaunchVelocity = TraceDirection->GetComponentLocation() + TraceDirection->GetForwardVector() * 1000.f;
 
 	// Simulate throwing a projectile (including gravity) to find a teleport location.
 	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = {TeleportTraceObjectType};

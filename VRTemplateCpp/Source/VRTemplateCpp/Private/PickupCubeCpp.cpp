@@ -6,17 +6,17 @@
 
 void APickupCubeCpp::AttachTo(USceneComponent* const SceneComponent)
 {
-	auto* const StaticMeshComponent = GetStaticMeshComponent();
+	UStaticMeshComponent* const StaticMeshComponent = GetStaticMeshComponent();
 	check(IsValid(StaticMeshComponent));
 	StaticMeshComponent->SetSimulatePhysics(false);
-	auto* const Root = GetRootComponent();
+	USceneComponent* const Root = GetRootComponent();
 	check(IsValid(Root));
 	Root->AttachToComponent(SceneComponent, FAttachmentTransformRules::KeepWorldTransform);
 }
 
 void APickupCubeCpp::Drop()
 {
-	auto* const StaticMeshComponent = GetStaticMeshComponent();
+	UStaticMeshComponent* const StaticMeshComponent = GetStaticMeshComponent();
 	check(IsValid(StaticMeshComponent));
 	StaticMeshComponent->SetSimulatePhysics(true);
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
