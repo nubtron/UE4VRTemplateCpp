@@ -12,7 +12,7 @@ AMotionControllerPawnCpp::AMotionControllerPawnCpp()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	VROrigin = CreateDefaultSubobject<USceneComponent>("VR Origin");
+	VROrigin = CreateDefaultSubobject<USceneComponent>(TEXT("VR Origin"));
 	SetRootComponent(VROrigin);
 } 
 
