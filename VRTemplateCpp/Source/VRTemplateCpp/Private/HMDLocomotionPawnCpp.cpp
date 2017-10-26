@@ -181,9 +181,10 @@ void AHMDLocomotionPawnCpp::HandleHMDTeleportReleased()
 	{
 		return;
 	}
+
 	bLocationPinned = false;
 
-	if (!bLocationFound) 
+	if (!bLocationFound)
 	{
 		return;
 	}
@@ -207,7 +208,7 @@ void AHMDLocomotionPawnCpp::FinishTeleport()
 
 	FRotator DeviceRotation;
 	FVector  DevicePosition; // Relative HMD location from Origin
-	UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(DeviceRotation, DevicePosition);
+	UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(/*out*/ DeviceRotation, /*out*/ DevicePosition);
 
 	const FVector Position2D{DevicePosition.X, DevicePosition.Y, 0.f}; // Ignore relative Height difference
 
@@ -227,6 +228,7 @@ void AHMDLocomotionPawnCpp::FinishTeleport()
 
 void AHMDLocomotionPawnCpp::CreateTeleportationMID()
 {
+	// Create MID to give activation feedback during teleportation.
 	check(IsValid(TeleportPin));
 	RingGlowMatInst = TeleportPin->CreateDynamicMaterialInstance(/*ElementIndex*/ 0);
 	check(IsValid(RingGlowMatInst));
@@ -236,8 +238,8 @@ bool AHMDLocomotionPawnCpp::GetTeleportDestination(FVector& OutLocation, FVector
 {
 	// Use Arrow component to set up trace origin and direction
 	check(IsValid(TraceDirection));
-	const FVector StartPos = TraceDirection->GetComponentLocation();
-	const FVector LaunchVelocity = TraceDirection->GetComponentLocation() + TraceDirection->GetForwardVector() * 1000.f;
+	const FVector StartPos       = TraceDirection->GetComponentLocation();
+	const FVector LaunchVelocity = TraceDirection->GetComponentLocation() + TraceDirection->GetForwardVector() * 10000.f;
 
 	// Simulate throwing a projectile (including gravity) to find a teleport location.
 	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes = {TeleportTraceObjectType};
@@ -248,7 +250,7 @@ bool AHMDLocomotionPawnCpp::GetTeleportDestination(FVector& OutLocation, FVector
 	UGameplayStatics::Blueprint_PredictProjectilePath_ByObjectType(this,
 	                                                               /*out*/ HitResult,
 	                                                               /*out*/ PathPositions,
-	                                                               LastTraceDestination,
+	                                                               /*out*/ LastTraceDestination,
 	                                                               StartPos,
 	                                                               LaunchVelocity,
 	                                                               /*bTracePath*/ true,
