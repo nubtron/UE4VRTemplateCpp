@@ -26,34 +26,34 @@ AMotionControllerCpp::AMotionControllerCpp()
 	SetRootComponent(SceneRoot);
 	{
 		MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Motion Controller"));
-		MotionController->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		MotionController->SetupAttachment(SceneRoot);
 		{
 			HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand Mesh"));
-			HandMesh->AttachToComponent(MotionController, FAttachmentTransformRules::KeepRelativeTransform);
+			HandMesh->SetupAttachment(MotionController);
 			{
 				ArcDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("Arc Direction"));
-				ArcDirection->AttachToComponent(HandMesh, FAttachmentTransformRules::KeepRelativeTransform);
+				ArcDirection->SetupAttachment(HandMesh);
 
 				ArcSpline = CreateDefaultSubobject<USplineComponent>(TEXT("ArcSpline"));
-				ArcSpline->AttachToComponent(HandMesh, FAttachmentTransformRules::KeepRelativeTransform);
+				ArcSpline->SetupAttachment(HandMesh);
 
 				GrapSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Grab Sphere"));
-				GrapSphere->AttachToComponent(HandMesh, FAttachmentTransformRules::KeepRelativeTransform);
+				GrapSphere->SetupAttachment(HandMesh);
 			}
 			ArcEndPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arc End Point"));
-			ArcEndPoint->AttachToComponent(MotionController, FAttachmentTransformRules::KeepRelativeTransform);
+			ArcEndPoint->SetupAttachment(MotionController);
 		}
 		TeleportCylinder = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Teleport Cylinder"));
-		TeleportCylinder->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		TeleportCylinder->SetupAttachment(SceneRoot);
 		{
 			Ring = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring"));
-			Ring->AttachToComponent(TeleportCylinder, FAttachmentTransformRules::KeepRelativeTransform);
+			Ring->SetupAttachment(TeleportCylinder);
 
 			Arrow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
-			Arrow->AttachToComponent(TeleportCylinder, FAttachmentTransformRules::KeepRelativeTransform);
+			Arrow->SetupAttachment(TeleportCylinder);
 			{
 				RoomScaleMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Room Scale Mesh"));
-				RoomScaleMesh->AttachToComponent(Arrow, FAttachmentTransformRules::KeepRelativeTransform);
+				RoomScaleMesh->SetupAttachment(Arrow);
 			}
 		}
 	}

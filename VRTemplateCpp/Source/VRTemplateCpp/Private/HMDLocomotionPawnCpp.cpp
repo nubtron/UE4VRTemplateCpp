@@ -22,23 +22,23 @@ AHMDLocomotionPawnCpp::AHMDLocomotionPawnCpp()
 	SetRootComponent(SceneRoot);
 	{
 		VROrigin = CreateDefaultSubobject<USceneComponent>(TEXT("VR Origin"));
-		VROrigin->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		VROrigin->SetupAttachment(SceneRoot);
 		{
 			Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-			Camera->AttachToComponent(VROrigin, FAttachmentTransformRules::KeepRelativeTransform);
+			Camera->SetupAttachment(VROrigin);
 			{
 				TraceDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("Trace Direction"));
-				TraceDirection->AttachToComponent(Camera, FAttachmentTransformRules::KeepRelativeTransform);
+				TraceDirection->SetupAttachment(Camera);
 			}
 		}
 		TeleportPin = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Teleport Pin"));
-		TeleportPin->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		TeleportPin->SetupAttachment(SceneRoot);
 		{
 			Arrow = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow"));
-			Arrow->AttachToComponent(TeleportPin, FAttachmentTransformRules::KeepRelativeTransform);
+			Arrow->SetupAttachment(TeleportPin);
 
 			Ring = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring"));
-			Ring->AttachToComponent(TeleportPin, FAttachmentTransformRules::KeepRelativeTransform);
+			Ring->SetupAttachment(TeleportPin);
 		}
 	}
 }
